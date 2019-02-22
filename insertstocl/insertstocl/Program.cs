@@ -13,137 +13,49 @@ namespace insertstocl
 {
     class Program
     {
-        static void Main(string[] args)
-        {
+        static void Main() {
+
             DateTime myDate = DateTime.Now;
-            string myDateString = myDate.ToString("yyyyMMdd");
-
-            string xlsPath = "C:\\Users\\user\\TWSE\\";
-            //string xlsPath = "C:\\Users\\user\\TWSE\\"+ myDateString + "stock.xls";
-
+            //string myDateString = myDate.ToString("yyyyMMdd");
+            string myDateString = "20190222";
             string Today = DateTime.Now.ToString("yyyy/MM/dd tt hh:mm:ss");
+            string TodayEn = String.Empty;
 
-            string csvName = myDateString + "stock.csv";
-            //string sheetName = "Sheet1";
-
-
-
-            //Excel的連線字串
-
-            //HDR(HeaDer Row):YES的表示第一列為標題列不讀取，NO則會讀取第一列
-
-            //IMEX:讀寫的模式，0:Export Mode(寫),1:Import Mode(讀),2:Linked Mode(讀/寫)，一般設定1
-
-            //xlsx格式不適用 
-            using (OleDbConnection conn_excel = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source='" + xlsPath + "';Extended Properties = 'Text;HDR=YES;FMT=Delimited;'"))
-            //using (OleDbConnection conn_excel = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source='" + xlsPath + "';Extended Properties = 'Excel 8.0;HDR=YES;IMEX=1;'"))
+            if (DateTime.Now.ToString("tt").ToString() == "上午")
             {
-
-                conn_excel.Open();
-
-                //OleDbCommand cmd_excel = new OleDbCommand("SELECT [Stock_Id],[Stock_Name],[Trading_Volume],[NumberOf_T],[Turnover],[Opening_P],[Highest_P],[Lowest_P],[Closing_P],[Range],[Difference] FROM [" + csvName + "];", conn_excel);
-                //OleDbCommand cmd_excel = new OleDbCommand("SELECT [證券代號],[證券名稱],[成交股數],[成交筆數],[成交金額],[開盤價],[最高價],[最低價],[收盤價],[漲跌(+/-)],[漲跌價差] FROM [" + csvName + "];", conn_excel);
-                OleDbCommand cmd_excel = new OleDbCommand("SELECT * FROM [" + csvName + "];", conn_excel);
-                //OleDbCommand cmd_excel = new OleDbCommand("SELECT [EmployeeNo],[Cname],[Ename],[Travel],[Health] FROM [" + sheetName + "$];", conn_excel);
-
-                OleDbDataReader reader_excel = cmd_excel.ExecuteReader();
-
-
-
-                //SQL連線字串
-
-                using (SqlConnection cn_sql = new SqlConnection(@"server=140.120.53.200;uid=ClassManager;pwd=12345678;database=StockManage_2018"))
-
-                {
-
-                    cn_sql.Open();
-
-                    //宣告Transaction
-
-                    SqlTransaction stran = cn_sql.BeginTransaction();
-
-                    try
-
-                    {
-
-                        while (reader_excel.Read())
-
-                        {
-
-                            SqlCommand cmd_sql = new SqlCommand("insert into testtbl (Stock_Id, Stock_Name, Trading_Volume, NumberOf_T, Turnover, Opening_P, Highest_P, Lowest_P, Closing_P, Range, Difference, DateTime) values ('" + reader_excel[1] + "','" + reader_excel[2] + "','" + reader_excel[3] + "','" + reader_excel[4] + "','" + reader_excel[5] + "','" + reader_excel[6] + "','" + reader_excel[7] + "','" + reader_excel[8] + "','" + reader_excel[9] + "','" + reader_excel[10] + "','" + reader_excel[11] + "','" + Today + "')", cn_sql);
-
-                            cmd_sql.Transaction = stran;
-
-                            cmd_sql.ExecuteNonQuery();
-
-                        }
-
-                        //迴圈跑完並一次Insert
-
-                        stran.Commit();
-
-                    }
-
-                    catch (SqlException ex)
-
-                    {
-
-                        Console.Write(ex.Message);
-
-                        Console.Write(ex.Number);
-
-                        stran.Rollback();
-
-                    }
-
-                    catch (OleDbException ex)
-
-                    {
-
-                        Console.Write(ex.Message);
-
-                        stran.Rollback();
-
-                    }
-
-                    catch (Exception ex)
-
-                    {
-
-                        Console.Write(ex.Message);
-
-                        stran.Rollback();
-
-                    }
-
-                    finally
-
-                    {
-
-                        cn_sql.Close();
-
-                        conn_excel.Close();
-
-                        reader_excel.Close();
-
-                    }
-
-                }
-
+                TodayEn = Today.Replace("上午","AM");
+            }
+            else if (DateTime.Now.ToString("tt").ToString() == "下午")
+            {
+                TodayEn = Today.Replace("下午", "PM");
             }
 
-        }
-
-        static void ReadCsvFun() {
-            DbConnection.NonQuery("insert into B");
-            string csvName = "C:\\Users\\user\\TWSE\\stock.csv";
-            string temp;
+            string csvName = "C:\\Users\\user\\TWSE\\" + myDateString + "stock.csv";
+            string line = String.Empty;
+            //string temp;
             string[] sptemp;
+            string temp;
+            string NumberOf_T;
+            string[] stockinfo;
+
+
             using (StreamReader fileReader = new StreamReader(csvName))
             {
-                temp = fileReader.ReadLine();
-                sptemp = temp.Split('');
+                if (null != (line = fileReader.ReadLine())) // skip header
+                {
+                    while ((line = fileReader.ReadLine()) != null)
+                    {
+                        sptemp = line.Split('\"');
+                        NumberOf_T = sptemp[3].ToString().Replace(",","");
+                        temp = sptemp[0] + NumberOf_T + sptemp[6];
+                        stockinfo = temp.Split(',');
+
+                        DbConnection.NonQuery("insert into Stock (Stock_Id, Stock_Name, NumberOf_T, Opening_P, Highest_P, Lowest_P, Closing_P, Range, Difference, DateTime) values ('" + stockinfo[1] + "',N'" + stockinfo[2] + "'," + stockinfo[3] + "," + stockinfo[4] + "," + stockinfo[5] + "," + stockinfo[6] + "," + stockinfo[7] + ",'" + stockinfo[8] + "'," + stockinfo[9] + ",'" + TodayEn + "')");
+                    }  
+                }
+                fileReader.Close();
             }
+            
         }
     }
 }
