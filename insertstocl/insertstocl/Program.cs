@@ -133,5 +133,17 @@ namespace insertstocl
             }
 
         }
+
+        static void ReadCsvFun() {
+            DbConnection.NonQuery("insert into B");
+            string csvName = "C:\\Users\\user\\TWSE\\stock.csv";
+            string temp;
+            string[] sptemp;
+            using (StreamReader fileReader = new StreamReader(csvName))
+            {
+                temp = fileReader.ReadLine();
+                sptemp = temp.Split('');
+            }
+        }
     }
 }
