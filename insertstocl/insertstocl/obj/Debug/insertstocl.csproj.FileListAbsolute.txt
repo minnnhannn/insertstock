@@ -1,0 +1,7 @@
+C:\Users\user\Documents\Trade\2019\insertstocl\insertstocl\obj\Debug\insertstocl.csprojAssemblyReference.cache
+C:\Users\user\Documents\Trade\2019\insertstocl\insertstocl\obj\Debug\insertstocl.csproj.CoreCompileInputs.cache
+C:\Users\user\Documents\Trade\2019\insertstocl\insertstocl\bin\Debug\insertstocl.exe.config
+C:\Users\user\Documents\Trade\2019\insertstocl\insertstocl\bin\Debug\insertstocl.exe
+C:\Users\user\Documents\Trade\2019\insertstocl\insertstocl\bin\Debug\insertstocl.pdb
+C:\Users\user\Documents\Trade\2019\insertstocl\insertstocl\obj\Debug\insertstocl.exe
+C:\Users\user\Documents\Trade\2019\insertstocl\insertstocl\obj\Debug\insertstocl.pdb
