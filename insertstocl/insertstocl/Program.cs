@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.OleDb;
 using System.Data.SqlClient;
 using System.IO;
@@ -14,6 +15,10 @@ namespace insertstocl
     class Program
     {
         static void Main() {
+
+            DataTable table = DbConnection.GetData("SELECT @@VERSION");
+
+                
 
             DateTime myDate = DateTime.Now;
             //string myDateString = myDate.ToString("yyyyMMdd");
@@ -50,7 +55,7 @@ namespace insertstocl
                         temp = sptemp[0] + NumberOf_T + sptemp[6];
                         stockinfo = temp.Split(',');
 
-                        DbConnection.NonQuery("insert into Stock (Stock_Id, Stock_Name, NumberOf_T, Opening_P, Highest_P, Lowest_P, Closing_P, Range, Difference, DateTime) values ('" + stockinfo[1] + "',N'" + stockinfo[2] + "'," + stockinfo[3] + "," + stockinfo[4] + "," + stockinfo[5] + "," + stockinfo[6] + "," + stockinfo[7] + ",'" + stockinfo[8] + "'," + stockinfo[9] + ",'" + TodayEn + "')");
+                        DbConnection.GetData("insert into Stock (Stock_Id, Stock_Name, NumberOf_T, Opening_P, Highest_P, Lowest_P, Closing_P, Range, Difference, DateTime) values ('" + stockinfo[1] + "',N'" + stockinfo[2] + "'," + stockinfo[3] + "," + stockinfo[4] + "," + stockinfo[5] + "," + stockinfo[6] + "," + stockinfo[7] + ",'" + stockinfo[8] + "'," + stockinfo[9] + ",'" + TodayEn + "')");
                     }  
                 }
                 fileReader.Close();
