@@ -42,7 +42,7 @@ namespace insertstocl
             string temp;
             string NumberOf_T;
             string[] stockinfo;
-
+            List<Stock> stocks = new List<Stock>();
 
             using (StreamReader fileReader = new StreamReader(csvName))
             {
@@ -54,13 +54,14 @@ namespace insertstocl
                         NumberOf_T = sptemp[3].ToString().Replace(",","");
                         temp = sptemp[0] + NumberOf_T + sptemp[6];
                         stockinfo = temp.Split(',');
-
-                        DbConnection.GetData("insert into Stock (Stock_Id, Stock_Name, NumberOf_T, Opening_P, Highest_P, Lowest_P, Closing_P, Range, Difference, DateTime) values ('" + stockinfo[1] + "',N'" + stockinfo[2] + "'," + stockinfo[3] + "," + stockinfo[4] + "," + stockinfo[5] + "," + stockinfo[6] + "," + stockinfo[7] + ",'" + stockinfo[8] + "'," + stockinfo[9] + ",'" + TodayEn + "')");
+                        stocks.Add(new Stock(stockinfo, TodayEn)); 
                     }  
                 }
                 fileReader.Close();
             }
-            
+            List<SqlParameter> parameters = new List<SqlParameter>();
+            parameters.Add(new SqlParameter("StockTable", Stock.SetStockTable(stocks) ));
+            DbConnection.ExecuteProc("[dbo].[InsertStockData]",parameters);
         }
     }
 }

@@ -34,5 +34,24 @@ namespace insertstocl {
                 return null;
             }
         }
+        public static DataTable ExecuteProc(string procName, List<SqlParameter> parameterList = null)
+        {
+            var table = new DataTable();
+           
+                SqlConnection sqlConn = new SqlConnection("Data Source=140.120.53.200;Persist Security Info=True;User ID=ClassManager;Password=12345678;Initial Catalog=StockManage_2018";
+                var myCommand = new SqlCommand("[StockManage_2018]." + procName, sqlConn);
+                myCommand.CommandType = CommandType.StoredProcedure;
+                myCommand.CommandTimeout = 120;
+                if (parameterList != null)
+                    foreach (var param in parameterList)
+                    {
+                        myCommand.Parameters.Add(param);
+                    }
+
+                var sqlDapter = new SqlDataAdapter(myCommand);
+                table.Locale = CultureInfo.InvariantCulture;
+                sqlDapter.Fill(table);
+            return table;
+        }
     }
 }
